@@ -3,7 +3,12 @@
 #include <vector>
 #include <cstdlib>
 #include <ctime>
+#include <functional>
 
+#ifndef NHEAP_H
+#define NHEAP_H
+
+template<typename T>
 class NHeap {
     
 public:
@@ -12,7 +17,11 @@ public:
         clearTree();
     }
     
-    void insert(int number) {
+    void setComparator(std::function<bool(T&, T&)> comparator) {
+        m_comparator = comparator;
+    }
+    
+    void insert(T number) {
         int lastIndex = m_heap.size();
         m_heap.push_back(number);
         m_heapfy(lastIndex);
@@ -34,18 +43,23 @@ public:
         return parentIndex;
     }
     
+    bool empty() {
+        return m_counter == 0;
+    }
+    
     bool hasNext() {
         return m_counter > 0;
     }
 
-    int getNext() {
+    T getNext() {
         // the extracted 
-        int next = m_heap[m_rootIndex];
+        T next = m_heap[m_rootIndex];
         
         // choose the children that will occupy the roots place
-        int tmpChildIndex, tmpChildValue;
+        int tmpChildIndex;
+        T tmpChildValue;
         int childIndex = childNth(m_rootIndex, 0);
-        int childValue = m_heap[childIndex];
+        T childValue = m_heap[childIndex];
 
         for (int i = 1; i < m_aridity; i++) {
             
@@ -53,12 +67,12 @@ public:
             if (hasChildNth(m_rootIndex, i)) {
                 tmpChildIndex = childNth(m_rootIndex, i);
                 tmpChildValue = m_heap[tmpChildIndex];
-                if (tmpChildValue > childValue) childIndex = tmpChildIndex;
+                if (m_comparator(tmpChildValue, childValue)) childIndex = tmpChildIndex;
             }
         }
 
-        // Mark root to be extremely high
-        m_heap[m_rootIndex] = INT_MAX;
+        // Mark root to be comparable distinguished
+        m_heap[m_rootIndex] = T::Distinguished();
         
         // change places to choose the min child to occupy the root position
         m_swap(m_heap[m_rootIndex], m_heap[childIndex]);
@@ -82,50 +96,23 @@ public:
         return m_heap.size();
     }
 
-    std::vector<int> heapSorted() {
-        std::vector<int> sortedArray;
+    std::vector<T> heapSorted() {
+        std::vector<T> sortedArray;
         
         while(hasNext()) {            
-            int next = getNext();
+            T next = getNext();
             sortedArray.push_back(next);
         }
 
         return sortedArray;
     }
-
-    void printHeap() {
-        std::cout << "[";
-        for (int i = m_rootIndex; i < m_heap.size() - 1; i++) {
-            std::cout << m_heap[i] << ", ";
-        }
-
-        std::cout << m_heap[m_heap.size() - 1] << "]" << std::endl;
-    }
-
-    void printHeapChildInfo() {
-
-        for (int i = 0; i < m_heap.size(); i++) {
-            std::cout << "Node Value " << m_heap[i] << " Children: ";
-            for (int ci = 0; ci < m_aridity; ci++) {
-
-                if (hasChildNth(i, ci)) {
-                    int childIndex = childNth(i, ci);
-                    int childValue = m_heap[childIndex];
-                    std::cout << childValue << "; ";
-                }
-                else {
-                    std::cout << "No Child " << ci << "; ";
-                }
-            }
-            std::cout << std::endl;
-        }
-    }
     
 private:
-    std::vector<int> m_heap;
+    std::vector<T> m_heap;
     int m_aridity;
     int m_counter;
     int m_rootIndex;
+    std::function<bool(T&, T&)> m_comparator;
     
     bool m_heapfy(int nodeIndex) {
         // if i'm root don't do anything
@@ -133,11 +120,11 @@ private:
         
         int parentIndex = parent(nodeIndex);
         // get vector references, much more elegant to use swap
-        int& parent = m_heap[parentIndex];
-        int& node = m_heap[nodeIndex];
+        T& parent = m_heap[parentIndex];
+        T& node = m_heap[nodeIndex];
         
         // if parent is higher than watching node, change their places in memory
-        if (parent > node) {
+        if (m_comparator(parent, node)) {
             m_swap(parent, node);
             return m_heapfy(parentIndex) || true;
         }
@@ -145,34 +132,11 @@ private:
         return false;
     }
     
-    void m_swap(int& l, int& r) {
-        int t = l;
+    void m_swap(T& l, T& r) {
+        T t = l;
         l = r;
         r = t;
     }
 };
 
-
-int main() {
-
-    NHeap h(2);
-    
-    std::srand(time(0));
-    int numNumbers = 10;
-    for (int i = 0; i < numNumbers; i++) {
-        int number = std::rand();
-        h.insert(number);
-    }
-    
-    h.printHeap();
-
-    auto sortedArray = h.heapSorted();
-
-    std::cout << "HEAP" << std::endl;
-
-    for (int i = 0; i < sortedArray.size(); i++) {
-        std::cout << i << " = " << sortedArray[i] << std::endl;
-    }
-    
-    return 0;
-}
+#endif /*NHEAP_H*/
