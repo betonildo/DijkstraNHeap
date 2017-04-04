@@ -52,9 +52,11 @@ public:
     
     int dijkstra(int origin,  int dest) {
         
+        // int* dist = new int[m_numberOfElements];
+        // bool* visited = new bool[m_numberOfElements];
+   
         int dist[m_numberOfElements];
         bool visited[m_numberOfElements];
-        
         
         //init distances and 
         for(int i = 0; i < m_numberOfElements; i++) {

@@ -3,6 +3,7 @@
 #include <iostream>
 #include <assert.h>
 #include <sstream>
+#include <chrono>
 
 // void testNHeap();
 void read_dimacs(std::istream& in, Graph& g);
@@ -17,7 +18,12 @@ int main(int argc, char** argv) {
     
     read_dimacs(std::cin, g);
     
-    std::cout << g.dijkstra(origin, dest) << std::endl;
+    // inicio
+    std::chrono::system_clock::time_point t = std::chrono::system_clock::now();
+    int distance = g.dijkstra(origin, dest);
+    // medição
+    std::cout << std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now()-t).count() << std::endl;
+    std::cout << distance << std::endl;
 
     return 0;
 }
