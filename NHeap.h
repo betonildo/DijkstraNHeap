@@ -17,15 +17,23 @@ public:
         clearTree();
     }
     
-    void setComparator(std::function<bool(T&, T&)> comparator) {
-        m_comparator = comparator;
-    }
-    
     void insert(T number) {
         int lastIndex = m_heap.size();
         m_heap.push_back(number);
         m_heapfy(lastIndex);
         m_counter += 1;
+    }
+    
+    void update(T element) {
+        bool wasUpdated = false;
+        for(int i = 0; i < m_heap.size(); i++)
+            if (T::SameKey(m_heap[i], element)) {
+                m_heap[i] = element;
+                wasUpdated = true;
+                break;
+            }
+
+        if (!wasUpdated) insert(element);
     }
     
     int childNth(int index, int childNumber) {
@@ -67,7 +75,7 @@ public:
             if (hasChildNth(m_rootIndex, i)) {
                 tmpChildIndex = childNth(m_rootIndex, i);
                 tmpChildValue = m_heap[tmpChildIndex];
-                if (m_comparator(tmpChildValue, childValue)) childIndex = tmpChildIndex;
+                if (tmpChildValue > childValue) childIndex = tmpChildIndex;
             }
         }
 
@@ -112,7 +120,6 @@ private:
     int m_aridity;
     int m_counter;
     int m_rootIndex;
-    std::function<bool(T&, T&)> m_comparator;
     
     bool m_heapfy(int nodeIndex) {
         // if i'm root don't do anything
@@ -124,7 +131,7 @@ private:
         T& node = m_heap[nodeIndex];
         
         // if parent is higher than watching node, change their places in memory
-        if (m_comparator(parent, node)) {
+        if (parent > node) {
             m_swap(parent, node);
             return m_heapfy(parentIndex) || true;
         }

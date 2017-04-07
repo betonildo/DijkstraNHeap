@@ -25,10 +25,16 @@ struct Edge {
         return {INF, INF};
     }
     
-
+    inline static bool SameKey(Edge& a, Edge& b) {
+        return a.to == b.to;
+    }
     
-    friend std::ostream& operator<<(std::ostream& os, const Edge& e) {
-        os << "{" << e.to << ", " << e.weight << "}" << std::endl;
+    inline friend int operator>(Edge& a, Edge& b) {
+        return a.weight > b.weight;
+    }
+    
+    inline friend std::ostream& operator<<(std::ostream& os, const Edge& e) {
+        os << "{" << e.to << ", " << e.weight << "}";
         return os;
     }
 };
@@ -52,9 +58,6 @@ public:
     
     int dijkstra(int origin,  int dest) {
         
-        // int* dist = new int[m_numberOfElements];
-        // bool* visited = new bool[m_numberOfElements];
-   
         int dist[m_numberOfElements];
         bool visited[m_numberOfElements];
         
@@ -64,12 +67,7 @@ public:
             visited[i] = false;
         }
         
-        auto comparator = [](Edge& a, Edge &b) -> bool {
-            return a.weight > b.weight;
-        };
-        
         NHeap<Edge> h(2);
-        h.setComparator(comparator);
         
         dist[origin] = 0;
         
@@ -80,7 +78,6 @@ public:
             Edge e = h.getNext();
             int u = e.to;
             
-            
             if (!visited[u]) {
                 
                 visited[u] = true;
@@ -90,14 +87,18 @@ public:
                     int v = neibor.to;
                     int w = neibor.weight;
 
-                    if (dist[u] + w < dist[v]) {
+                    if (dist[v] == INF) {
                         dist[v] = dist[u] + w;
                         h.insert({v, dist[v]});
+                    }
+                    else if (dist[u] + w < dist[v]) {
+                        dist[v] = dist[u] + w;
+                        std::cout << "UPDATE" << std::endl;
+                        h.update({v, dist[v]});
                     }
                 }
             }
         }
-        
         
         return dist[dest];
     }
