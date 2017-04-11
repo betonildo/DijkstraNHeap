@@ -1,4 +1,4 @@
-set xlabel "time (ms)"
+set xlabel "inserts"
 set ylabel "swaps"
-plot    "unit_tests/tests_outputs/heap_insert_2_ari.dat" using 1:2 title "swap x time" w linesp, \
-        (2 ** x) * x using 1:2 title "swap x time theorical" w linesp, \
+plot "unit_tests/tests_outputs/heap_insert_2_ari_eswaps_nitens.dat" title "swap x itens theorical" w linesp, \
+    "unit_tests/tests_outputs/heap_insert_2_ari_swaps_nitens.dat" title "swap x itens" w linesp

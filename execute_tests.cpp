@@ -12,7 +12,7 @@ int main(int argc, char** argv) {
 
     if (strcmp(argv[1], "h_update") == 0) {
         std::ofstream update_test_2_ari("unit_tests/tests_outputs/heap_update_2_ari.dat");
-
+        NHeapTest::testUpdate(update_test_2_ari);
     }
 
     return 0;
