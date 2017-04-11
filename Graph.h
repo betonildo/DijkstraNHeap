@@ -1,45 +1,12 @@
 #include <vector>
 #include <map>
-#include <climits>
+
 #include <iostream>
 #include "NHeap.h"
+#include "Edge.h"
 
 #ifndef GRAPH_H
 #define GRAPH_H
-
-#define INF INT_MAX
-
-#pragma pack(push, 0)
-
-struct Edge {
-    int to;
-    int weight;
-    
-    Edge& operator=(const Edge& b) {
-        to = b.to;
-        weight = b.weight;
-        return *this;
-    }
-    
-    static Edge Distinguished() {
-        return {INF, INF};
-    }
-    
-    inline static bool SameKey(Edge& a, Edge& b) {
-        return a.to == b.to;
-    }
-    
-    inline friend int operator>(Edge& a, Edge& b) {
-        return a.weight > b.weight;
-    }
-    
-    inline friend std::ostream& operator<<(std::ostream& os, const Edge& e) {
-        os << "{" << e.to << ", " << e.weight << "}";
-        return os;
-    }
-};
-
-#pragma pack(pop)
 
 class Graph {
 
@@ -47,63 +14,85 @@ public:
     Graph() {
         m_graph.clear();
     }
+
+    void setHeapAridity(int aridity) {
+        m_aridity = aridity;
+    }
     
     void setSize(int numberOfElements) {
-        m_numberOfElements = numberOfElements;
+        m_numberOfElements = numberOfElements + 1;
     }
     
     void set(int origin, int dest, int weight) {
         m_graph[origin].push_back({dest, weight});
     }
     
-    int dijkstra(int origin,  int dest) {
+    EdgeDistance dijkstra(int origin,  int dest) {
         
-        int dist[m_numberOfElements];
-        bool visited[m_numberOfElements];
+        // instantiate distances calculated
+        EdgeDistance distances[m_numberOfElements];
+
+        // if some over or under flow occurs, the distance is infinity
+        if (dest >= m_numberOfElements || origin >= m_numberOfElements || dest < 0 || origin < 0) return distances[0];
+        // The distance to it self is 0
+        distances[origin].distanceTo = 0;
         
-        //init distances and 
-        for(int i = 0; i < m_numberOfElements; i++) {
-            dist[i] = INF;
-            visited[i] = false;
-        }
+        // instantiate the heap and insert the vertice origin as starting point
+        NHeap<Edge> edgesHeap(m_aridity);
+        edgesHeap.insert({origin, 0});
         
-        NHeap<Edge> h(2);
-        
-        dist[origin] = 0;
-        
-        h.insert({origin, 0});
-        
-        while (!h.empty()) {
+        while (!edgesHeap.empty()) {
             
-            Edge e = h.getNext();
+            // get next and delete the minimun (deletemin* variant name)
+            Edge e = edgesHeap.getNext();
             int u = e.to;
             
-            if (!visited[u]) {
-                
-                visited[u] = true;
+            // if this vertice was not visited yet, look for each neibor 
+            // and verify the distance to the origin
+            if (distances[u].visited == false) {                
+                distances[u].visited = true;
                 
                 for(auto neibor : m_graph[u]) {
                     
                     int v = neibor.to;
                     int w = neibor.weight;
-
-                    if (dist[v] == INF) {
-                        dist[v] = dist[u] + w;
-                        h.insert({v, dist[v]});
+                    int cost = distances[u].distanceTo + w;
+                    // if the current distance is infinity (not calculated yet)
+                    // and the cost is less than infinity we try the path by this
+                    // vertice.
+                    if (distances[v].infinity && cost < distances[v].distanceTo) {
+                        distances[v].infinity = false;
+                        distances[v].distanceTo = cost;
+                        edgesHeap.insert({v, cost});
                     }
-                    else if (dist[u] + w < dist[v]) {
-                        dist[v] = dist[u] + w;
-                        std::cout << "UPDATE" << std::endl;
-                        h.update({v, dist[v]});
+                    // else if we already have an instance of the vertice on the heap,
+                    // we must update the distance to origin reling on distances pre
+                    // calculated.
+                    else if (cost < distances[v].distanceTo) {
+                        distances[v].distanceTo = cost;
+                        edgesHeap.update({v, cost});
                     }
                 }
             }
         }
         
-        return dist[dest];
+        return distances[dest];
+    }
+
+    void print(unsigned ni) {
+        
+        printf("%d ", ni);
+        for(auto neibor : m_graph[ni]) {
+            printf("-(%d)-> ", neibor.weight);
+            print(neibor.to);
+        }
+
+        if (m_graph[ni].size() == 0)
+            printf("\n");
     }
 
 private:
+    int m_aridity;
     int m_numberOfElements;
     std::map<int, std::vector<Edge> > m_graph;
     

@@ -14,19 +14,27 @@ class NHeap {
 public:
     NHeap(int aridity) {
         m_aridity = aridity;
-        clearTree();
+        m_heap.reserve(64);
+        clearTree();        
     }
     
     void insert(T number) {
         int lastIndex = m_heap.size();
+        unsigned int capacity = m_heap.capacity();
+        if (lastIndex >= capacity) {
+            unsigned int toreserve = capacity * 2;
+            //printf("RESERVING. %d... %d..\n", capacity, toreserve);
+            m_heap.resize(toreserve);
+        }
         m_heap.push_back(number);
         m_heapfy(lastIndex);
         m_counter += 1;
     }
     
     void update(T element) {
+        // todo: recusively bottom up to update
         bool wasUpdated = false;
-        for(int i = 0; i < m_heap.size(); i++)
+        for (int i = 0; i < m_heap.size(); i++)
             if (T::SameKey(m_heap[i], element)) {
                 m_heap[i] = element;
                 wasUpdated = true;
@@ -69,27 +77,22 @@ public:
         int childIndex = childNth(m_rootIndex, 0);
         T childValue = m_heap[childIndex];
 
-        for (int i = 1; i < m_aridity; i++) {
-            
+        for (int i = 1; i < m_aridity; i++) {            
             // only do some thing if have a valid child
             if (hasChildNth(m_rootIndex, i)) {
                 tmpChildIndex = childNth(m_rootIndex, i);
                 tmpChildValue = m_heap[tmpChildIndex];
-                if (tmpChildValue > childValue) childIndex = tmpChildIndex;
+                if (T::CompareWeights(tmpChildValue, childValue))
+                    childIndex = tmpChildIndex;
             }
         }
 
         // Mark root to be comparable distinguished
         m_heap[m_rootIndex] = T::Distinguished();
-        
-        // change places to choose the min child to occupy the root position
-        m_swap(m_heap[m_rootIndex], m_heap[childIndex]);
-        
 
         // verify if the heapfy for all the tree from end to begining
-        for (int i = m_heap.size() - 1; i >= m_rootIndex; i--) {
-            m_heapfy(i);
-        }
+        for (int i = m_heap.size() - 1; i >= m_rootIndex; i--) m_heapfy(i);
+
         m_counter -= 1;
         return next;
     }
@@ -102,6 +105,17 @@ public:
 
     int size() {
         return m_heap.size();
+    }
+
+    void print() {
+        std::cout << "[";
+        for (unsigned i = 0; i < m_heap.size() - 1; i++) {
+            auto e = m_heap[i];
+            std::cout << e << ", ";
+        }
+
+        auto e = m_heap[m_heap.size() - 1];
+        std::cout << e << "]" << std::endl;
     }
 
     std::vector<T> heapSorted() {
@@ -121,9 +135,9 @@ private:
     int m_counter;
     int m_rootIndex;
     
-    bool m_heapfy(int nodeIndex) {
+    void m_heapfy(int nodeIndex) {
         // if i'm root don't do anything
-        if (nodeIndex == m_rootIndex) return false;        
+        if (nodeIndex == m_rootIndex) return;
         
         int parentIndex = parent(nodeIndex);
         // get vector references, much more elegant to use swap
@@ -131,12 +145,10 @@ private:
         T& node = m_heap[nodeIndex];
         
         // if parent is higher than watching node, change their places in memory
-        if (parent > node) {
+        if (T::CompareWeights(parent, node)) {
             m_swap(parent, node);
-            return m_heapfy(parentIndex) || true;
+            m_heapfy(parentIndex);
         }
-        
-        return false;
     }
     
     void m_swap(T& l, T& r) {
