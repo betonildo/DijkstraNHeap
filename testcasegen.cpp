@@ -7,6 +7,8 @@
  
 #include <iostream>
 #include <cassert>
+#include <cstdlib>
+#include <time.h>
 using namespace std;
  
 #include <boost/graph/adjacency_list.hpp>

@@ -18,30 +18,28 @@ public:
         clearTree();        
     }
     
-    void insert(T number) {
+    unsigned int insert(T number) {
         int lastIndex = m_heap.size();
         unsigned int capacity = m_heap.capacity();
         if (lastIndex >= capacity) {
-            unsigned int toreserve = capacity * 2;
-            //printf("RESERVING. %d... %d..\n", capacity, toreserve);
-            m_heap.resize(toreserve);
+            printf("Resizing to %d\n", capacity * 2);
+            m_heap.reserve(capacity * 2);
         }
         m_heap.push_back(number);
-        m_heapfy(lastIndex);
+        unsigned int n_swaps = 0;
+        m_heapfy(lastIndex, n_swaps);
         m_counter += 1;
+
+        return n_swaps;
     }
     
-    void update(T element) {
-        // todo: recusively bottom up to update
-        bool wasUpdated = false;
-        for (int i = 0; i < m_heap.size(); i++)
-            if (T::SameKey(m_heap[i], element)) {
-                m_heap[i] = element;
-                wasUpdated = true;
-                break;
-            }
+    void setCapacity(unsigned long capacity) {
+        m_heap.reserve(capacity);
+    }
 
-        if (!wasUpdated) insert(element);
+    void update(T element) {
+        bool found = false;
+        m_updateHeapdownAll(0, element, found);
     }
     
     int childNth(int index, int childNumber) {
@@ -82,16 +80,17 @@ public:
             if (hasChildNth(m_rootIndex, i)) {
                 tmpChildIndex = childNth(m_rootIndex, i);
                 tmpChildValue = m_heap[tmpChildIndex];
-                if (T::CompareWeights(tmpChildValue, childValue))
+                if (tmpChildValue > childValue)
                     childIndex = tmpChildIndex;
             }
         }
 
         // Mark root to be comparable distinguished
-        m_heap[m_rootIndex] = T::Distinguished();
+        m_heap[m_rootIndex] = T();
 
         // verify if the heapfy for all the tree from end to begining
-        for (int i = m_heap.size() - 1; i >= m_rootIndex; i--) m_heapfy(i);
+        unsigned int n_swaps = 0;
+        for (int i = m_heap.size() - 1; i >= m_rootIndex; i--) m_heapfy(i, n_swaps);
 
         m_counter -= 1;
         return next;
@@ -135,7 +134,7 @@ private:
     int m_counter;
     int m_rootIndex;
     
-    void m_heapfy(int nodeIndex) {
+    void m_heapfy(int nodeIndex, unsigned int& num_swaps) {
         // if i'm root don't do anything
         if (nodeIndex == m_rootIndex) return;
         
@@ -145,10 +144,39 @@ private:
         T& node = m_heap[nodeIndex];
         
         // if parent is higher than watching node, change their places in memory
-        if (T::CompareWeights(parent, node)) {
+        if (parent > node) {
+            num_swaps += 1;
             m_swap(parent, node);
-            m_heapfy(parentIndex);
+            m_heapfy(parentIndex, num_swaps);
         }
+    }
+
+    void m_updateHeapdownAll(int nodeIndex, T& element, bool& found = false) {
+
+        if (found) return;
+
+        T root = m_heap[nodeIndex];
+        if (root == element) {
+            found = true;
+            m_heap[nodeIndex] = element;
+            return;
+        }
+        else {
+            for(int i = 0; i < m_aridity; i++) {
+                if (hasChildNth(nodeIndex, i)) {
+                    int childIndex = childNth(nodeIndex, i);
+                    T childValue = m_heap[childIndex];
+                    if (childValue == element) {
+                        found = true;
+                        m_heap[childIndex] = element;
+                        return;
+                    }
+                    else m_updateHeapdownAll(childIndex, element, found);
+                }
+            }
+        }
+
+        return;
     }
     
     void m_swap(T& l, T& r) {

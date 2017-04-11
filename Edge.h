@@ -27,6 +27,21 @@ struct EdgeDistance {
 struct Edge {
     int to;
     int weight;
+
+    Edge() {
+        to = INF;
+        weight = INF;
+    }
+
+    Edge(int v, int w) {
+        to = v;
+        weight = w;
+    }
+
+    Edge(const Edge& other) {
+        to = other.to;
+        weight = other.weight;
+    }
     
     static Edge Create(unsigned to, unsigned weight) {
         Edge e;
@@ -43,6 +58,14 @@ struct Edge {
     
     static Edge Distinguished() {
         return {INF, INF};
+    }
+
+    inline friend int operator>(Edge& a, Edge& b) {
+        return Edge::CompareWeights(a, b);
+    }
+
+    inline friend bool operator==(Edge& a, Edge& b) {
+        return Edge::SameKey(a, b);
     }
 
     inline static int CompareWeights(Edge& a, Edge& b) {

@@ -1,19 +1,19 @@
 #include <fstream>
 #include "unit_tests/test_heap.h"
-
+#include <string.h>
 
 int main(int argc, char** argv) {
 
-    std::ofstream insert_test_2_ari("unit_tests/tests_outputs/heap_insert_1000_upto_1000000_2_ari.dat");
-    std::ofstream insert_test_3_ari("unit_tests/tests_outputs/heap_insert_1000_upto_1000000_3_ari.dat");
-    std::ofstream insert_test_4_ari("unit_tests/tests_outputs/heap_insert_1000_upto_1000000_4_ari.dat");
-    std::ofstream insert_test_5_ari("unit_tests/tests_outputs/heap_insert_1000_upto_1000000_5_ari.dat");
+    // insert
+    if (strcmp(argv[1], "h_insert") == 0) {
+        std::ofstream insert_test_2_ari("unit_tests/tests_outputs/heap_insert_2_ari.dat");
+        NHeapTest::testInsert(insert_test_2_ari);
+    }
 
-    NHeapTest::testFromNtoNinstancesAtStepMtimes_O_aridity(insert_test_2_ari, 100000, 1000000, 100000, 10, 2);
-    NHeapTest::testFromNtoNinstancesAtStepMtimes_O_aridity(insert_test_3_ari, 100000, 1000000, 100000, 10, 3);
-    NHeapTest::testFromNtoNinstancesAtStepMtimes_O_aridity(insert_test_4_ari, 100000, 1000000, 100000, 10, 4);
-    NHeapTest::testFromNtoNinstancesAtStepMtimes_O_aridity(insert_test_5_ari, 100000, 1000000, 100000, 10, 5);
+    if (strcmp(argv[1], "h_update") == 0) {
+        std::ofstream update_test_2_ari("unit_tests/tests_outputs/heap_update_2_ari.dat");
 
+    }
 
     return 0;
 }
