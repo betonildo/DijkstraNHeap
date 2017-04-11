@@ -21,10 +21,7 @@ public:
     unsigned int insert(T number) {
         int lastIndex = m_heap.size();
         unsigned int capacity = m_heap.capacity();
-        if (lastIndex >= capacity) {
-            printf("Resizing to %d\n", capacity * 2);
-            m_heap.reserve(capacity * 2);
-        }
+        if (lastIndex >= capacity) m_heap.reserve(capacity * 2);
         m_heap.push_back(number);
         unsigned int n_swaps = 0;
         m_heapfy(lastIndex, n_swaps);
@@ -90,7 +87,7 @@ public:
 
         // verify if the heapfy for all the tree from end to begining
         unsigned int n_swaps = 0;
-        for (int i = m_heap.size() - 1; i >= m_rootIndex; i--) m_heapfy(i, n_swaps);
+        m_heapfyDown(m_rootIndex, n_swaps);
 
         m_counter -= 1;
         return next;
@@ -148,6 +145,28 @@ private:
             num_swaps += 1;
             m_swap(parent, node);
             m_heapfy(parentIndex, num_swaps);
+        }
+    }
+
+    void m_heapfyDown(int nodeIndex, unsigned int& num_swaps) {
+
+        if (nodeIndex == m_counter + 1) return;
+
+        // verify heap property for each of it's children
+        for (int i = 0; i < m_aridity; i++) {
+
+            if (hasChildNth(nodeIndex, i)) {
+
+                int childIndex = childNth(nodeIndex, i);
+                T& childValue = m_heap[childIndex];
+                T& nodeValue = m_heap[nodeIndex];
+
+                if (nodeValue > childValue) {
+                    num_swaps += 1;
+                    m_swap(nodeValue, childValue);
+                    m_heapfyDown(childIndex, num_swaps);
+                }
+            }
         }
     }
 
