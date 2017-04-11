@@ -65,22 +65,6 @@ public:
     T getNext() {
         // the extracted 
         T next = m_heap[m_rootIndex];
-        
-        // choose the children that will occupy the roots place
-        int tmpChildIndex;
-        T tmpChildValue;
-        int childIndex = childNth(m_rootIndex, 0);
-        T childValue = m_heap[childIndex];
-
-        for (int i = 1; i < m_aridity; i++) {            
-            // only do some thing if have a valid child
-            if (hasChildNth(m_rootIndex, i)) {
-                tmpChildIndex = childNth(m_rootIndex, i);
-                tmpChildValue = m_heap[tmpChildIndex];
-                if (tmpChildValue > childValue)
-                    childIndex = tmpChildIndex;
-            }
-        }
 
         // Mark root to be comparable distinguished
         m_heap[m_rootIndex] = T();
