@@ -23,7 +23,7 @@ public:
         unsigned int capacity = m_heap.capacity();
         if (lastIndex >= capacity) m_heap.reserve(capacity * 2);
         m_heap.push_back(number);
-        unsigned int n_swaps = 0;
+        unsigned long n_swaps = 0;
         m_heapfy(lastIndex, n_swaps);
         m_counter += 1;
 
@@ -34,9 +34,18 @@ public:
         m_heap.reserve(capacity);
     }
 
-    void update(T element) {
-        bool found = false;
-        m_updateHeapdownAll(0, element, found);
+    int update(T element) {        
+        int nodeIndex = m_updateHeapdownAll(0, element);
+        unsigned long n_swaps = 0;
+        if (nodeIndex >= 0) {
+            m_heap[nodeIndex] = element;
+            // try to update upwards.
+            m_heapfy(nodeIndex, n_swaps);
+            // if no swap was made upper, then maybe some swap
+            // can be needed down
+            if (n_swaps == 0) m_heapfyDown(nodeIndex, n_swaps);            
+        }
+        return n_swaps;
     }
     
     int childNth(int index, int childNumber) {
@@ -63,16 +72,20 @@ public:
     }
 
     T getNext() {
-        // the extracted 
+        unsigned long n_swaps;
+        return getNext(n_swaps);
+    }
+
+    T getNext(unsigned long& n_swaps) {
+        
+        // the extracted
         T next = m_heap[m_rootIndex];
 
         // Mark root to be comparable distinguished
         m_heap[m_rootIndex] = T();
 
-        // verify if the heapfy for all the tree from end to begining
-        unsigned int n_swaps = 0;
+        // verify if the heapfy for all the tree from end to begining        
         m_heapfyDown(m_rootIndex, n_swaps);
-
         m_counter -= 1;
         return next;
     }
@@ -81,6 +94,7 @@ public:
         m_rootIndex = 0;
         m_counter = 0;
         m_heap.clear();
+        m_heap.erase(m_heap.begin(), m_heap.end());
     }    
 
     int size() {
@@ -115,7 +129,7 @@ private:
     int m_counter;
     int m_rootIndex;
     
-    void m_heapfy(int nodeIndex, unsigned int& num_swaps) {
+    void m_heapfy(int nodeIndex, unsigned long& num_swaps) {
         // if i'm root don't do anything
         if (nodeIndex == m_rootIndex) return;
         
@@ -132,7 +146,7 @@ private:
         }
     }
 
-    void m_heapfyDown(int nodeIndex, unsigned int& num_swaps) {
+    void m_heapfyDown(int nodeIndex, unsigned long& num_swaps) {
 
         if (nodeIndex == m_counter + 1) return;
 
@@ -154,32 +168,22 @@ private:
         }
     }
 
-    void m_updateHeapdownAll(int nodeIndex, T& element, bool& found = false) {
-
-        if (found) return;
+    int m_updateHeapdownAll(int nodeIndex, T& element) {
 
         T root = m_heap[nodeIndex];
-        if (root == element) {
-            found = true;
-            m_heap[nodeIndex] = element;
-            return;
-        }
+        if (root == element) return nodeIndex;
         else {
             for(int i = 0; i < m_aridity; i++) {
                 if (hasChildNth(nodeIndex, i)) {
                     int childIndex = childNth(nodeIndex, i);
                     T childValue = m_heap[childIndex];
-                    if (childValue == element) {
-                        found = true;
-                        m_heap[childIndex] = element;
-                        return;
-                    }
-                    else m_updateHeapdownAll(childIndex, element, found);
+                    if (childValue == element) return childIndex;
+                    else return m_updateHeapdownAll(childIndex, element);
                 }
             }
         }
 
-        return;
+        return -1;
     }
     
     void m_swap(T& l, T& r) {

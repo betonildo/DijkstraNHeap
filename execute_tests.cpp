@@ -1,18 +1,30 @@
 #include <fstream>
 #include "unit_tests/test_heap.h"
-#include <string.h>
+#include "unit_tests/test_graph.h"
+#include <iostream>
 
 int main(int argc, char** argv) {
+    std::string arg;
+    arg.assign(argv[1]);
 
-    // insert
-    if (strcmp(argv[1], "h_insert") == 0) {
+    if (arg == "h_insert") {
         std::ofstream insert_test_2_ari("unit_tests/tests_outputs/heap_insert_2_ari.dat");
         NHeapTest::testInsert(insert_test_2_ari);
     }
 
-    if (strcmp(argv[1], "h_update") == 0) {
+    if (arg == "h_update") {
         std::ofstream update_test_2_ari("unit_tests/tests_outputs/heap_update_2_ari.dat");
         NHeapTest::testUpdate(update_test_2_ari);
+    }
+
+    if (arg == "h_deletemin") {
+        std::ofstream deletemin_test_2_ari("unit_tests/tests_outputs/heap_deletemin_2_ari.dat");
+        NHeapTest::testDeletemin(deletemin_test_2_ari);
+    }
+
+    if (arg == "dijkstra") {
+        std::ofstream dijkstra_test("unit_tests/tests_outputs/dijkstra_test.dat");
+        DijkstraTest::testDijkstra(dijkstra_test);
     }
 
     return 0;

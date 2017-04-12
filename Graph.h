@@ -15,19 +15,19 @@ public:
         m_graph.clear();
     }
 
-    void setHeapAridity(int aridity) {
+    void setHeapAridity(unsigned long aridity) {
         m_aridity = aridity;
     }
     
-    void setSize(int numberOfElements) {
+    void setSize(unsigned long numberOfElements) {
         m_numberOfElements = numberOfElements + 1;
     }
     
-    void set(int origin, int dest, int weight) {
+    void set(unsigned long origin, unsigned long dest, unsigned long weight) {
         m_graph[origin].push_back({dest, weight});
     }
     
-    EdgeDistance dijkstra(int origin,  int dest) {
+    EdgeDistance dijkstra(unsigned long origin,  unsigned long dest) {
         
         // instantiate distances calculated
         EdgeDistance distances[m_numberOfElements];
@@ -44,8 +44,9 @@ public:
         while (!edgesHeap.empty()) {
             
             // get next and delete the minimun (deletemin* variant name)
+            n_deletes += 1;
             Edge e = edgesHeap.getNext();
-            int u = e.to;
+            unsigned long u = e.to;
             
             // if this vertice was not visited yet, look for each neibor 
             // and verify the distance to the origin
@@ -54,15 +55,16 @@ public:
                 
                 for(auto neibor : m_graph[u]) {
                     
-                    int v = neibor.to;
-                    int w = neibor.weight;
-                    int cost = distances[u].distanceTo + w;
+                    unsigned long v = neibor.to;
+                    unsigned long w = neibor.weight;
+                    unsigned long cost = distances[u].distanceTo + w;
                     // if the current distance is infinity (not calculated yet)
                     // and the cost is less than infinity we try the path by this
                     // vertice.
                     if (distances[v].infinity && cost < distances[v].distanceTo) {
                         distances[v].infinity = false;
                         distances[v].distanceTo = cost;
+                        n_inserts += 1;
                         edgesHeap.insert({v, cost});
                     }
                     // else if we already have an instance of the vertice on the heap,
@@ -70,6 +72,7 @@ public:
                     // calculated.
                     else if (cost < distances[v].distanceTo) {
                         distances[v].distanceTo = cost;
+                        n_updates += 1;
                         edgesHeap.update({v, cost});
                     }
                 }
@@ -77,6 +80,10 @@ public:
         }
         
         return distances[dest];
+    }
+
+    unsigned long heigherVertice() {
+        return m_graph.rbegin()->first;
     }
 
     void print(unsigned ni) {
@@ -91,10 +98,32 @@ public:
             printf("\n");
     }
 
+    void clearCounters() {
+        n_inserts = n_deletes = n_updates = 0;
+    }
+
+    unsigned long getNumberOfInserts() {
+        return n_inserts;
+    }
+
+    unsigned long getNumberOfDeletes() {
+        return n_deletes;
+    }
+
+    unsigned long getNumberOfUpdates() {
+        return n_updates;
+    }
+
 private:
-    int m_aridity;
-    int m_numberOfElements;
-    std::map<int, std::vector<Edge> > m_graph;
+    unsigned long m_aridity;
+    unsigned long m_numberOfElements;
+    std::map<unsigned long, std::vector<Edge> > m_graph;
+
+    unsigned long n_inserts;
+    unsigned long n_deletes;
+    unsigned long n_updates;
+
+    
     
 };
 

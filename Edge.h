@@ -7,7 +7,7 @@
 #define INF INT_MAX
 
 struct EdgeDistance {
-    unsigned distanceTo;
+    unsigned long distanceTo;
     bool visited;
     bool infinity;
 
@@ -25,15 +25,15 @@ struct EdgeDistance {
 };
 
 struct Edge {
-    int to;
-    int weight;
+    unsigned long to;
+    unsigned long weight;
 
     Edge() {
         to = INF;
         weight = INF;
     }
 
-    Edge(int v, int w) {
+    Edge(unsigned long v, unsigned long w) {
         to = v;
         weight = w;
     }
@@ -43,7 +43,7 @@ struct Edge {
         weight = other.weight;
     }
     
-    static Edge Create(unsigned to, unsigned weight) {
+    static Edge Create(unsigned long to, unsigned long weight) {
         Edge e;
         e.to = to;
         e.weight = weight;
@@ -60,7 +60,7 @@ struct Edge {
         return {INF, INF};
     }
 
-    inline friend int operator>(Edge& a, Edge& b) {
+    inline friend unsigned long operator>(Edge& a, Edge& b) {
         return Edge::CompareWeights(a, b);
     }
 
@@ -68,7 +68,7 @@ struct Edge {
         return Edge::SameKey(a, b);
     }
 
-    inline static int CompareWeights(Edge& a, Edge& b) {
+    inline static unsigned long CompareWeights(Edge& a, Edge& b) {
         return a.weight > b.weight;
     }
     
