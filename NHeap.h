@@ -10,14 +10,14 @@
 
 template<typename T>
 class NHeap {
-    
+
 public:
     NHeap(int aridity) {
         m_aridity = aridity;
         m_heap.reserve(64);
-        clearTree();        
+        clearTree();
     }
-    
+
     unsigned int insert(T number) {
         int lastIndex = m_heap.size();
         unsigned int capacity = m_heap.capacity();
@@ -26,15 +26,14 @@ public:
         unsigned long n_swaps = 0;
         m_heapfy(lastIndex, n_swaps);
         m_counter += 1;
-
         return n_swaps;
     }
-    
+
     void setCapacity(unsigned long capacity) {
         m_heap.reserve(capacity);
     }
 
-    int update(T element) {        
+    int update(T element) {
         int nodeIndex = m_updateHeapdownAll(0, element);
         unsigned long n_swaps = 0;
         if (nodeIndex >= 0) {
@@ -43,11 +42,11 @@ public:
             m_heapfy(nodeIndex, n_swaps);
             // if no swap was made upper, then maybe some swap
             // can be needed down
-            if (n_swaps == 0) m_heapfyDown(nodeIndex, n_swaps);            
+            if (n_swaps == 0) m_heapfyDown(nodeIndex, n_swaps);
         }
         return n_swaps;
     }
-    
+
     int childNth(int index, int childNumber) {
         int nodeIndex = m_aridity * index + childNumber + 1;
         return nodeIndex;
@@ -57,16 +56,16 @@ public:
         int nodeIndex = m_aridity * index + childNumber + 1;
         return nodeIndex < m_rootIndex + m_counter;
     }
-    
+
     int parent(int nodeIndex) {
         int parentIndex = (int)((float)(nodeIndex - 1)/(float)m_aridity);
         return parentIndex;
     }
-    
+
     bool empty() {
         return m_counter == 0;
     }
-    
+
     bool hasNext() {
         return m_counter > 0;
     }
@@ -77,14 +76,14 @@ public:
     }
 
     T getNext(unsigned long& n_swaps) {
-        
+
         // the extracted
         T next = m_heap[m_rootIndex];
 
         // Mark root to be comparable distinguished
         m_heap[m_rootIndex] = T();
 
-        // verify if the heapfy for all the tree from end to begining        
+        // verify if the heapfy for all the tree from end to begining
         m_heapfyDown(m_rootIndex, n_swaps);
         m_counter -= 1;
         return next;
@@ -95,7 +94,7 @@ public:
         m_counter = 0;
         m_heap.clear();
         m_heap.erase(m_heap.begin(), m_heap.end());
-    }    
+    }
 
     int size() {
         return m_heap.size();
@@ -114,30 +113,30 @@ public:
 
     std::vector<T> heapSorted() {
         std::vector<T> sortedArray;
-        
-        while(hasNext()) {            
+
+        while(hasNext()) {
             T next = getNext();
             sortedArray.push_back(next);
         }
 
         return sortedArray;
     }
-    
+
 private:
     std::vector<T> m_heap;
     int m_aridity;
     int m_counter;
     int m_rootIndex;
-    
+
     void m_heapfy(int nodeIndex, unsigned long& num_swaps) {
         // if i'm root don't do anything
         if (nodeIndex == m_rootIndex) return;
-        
+
         int parentIndex = parent(nodeIndex);
         // get vector references, much more elegant to use swap
         T& parent = m_heap[parentIndex];
         T& node = m_heap[nodeIndex];
-        
+
         // if parent is higher than watching node, change their places in memory
         if (parent > node) {
             num_swaps += 1;
@@ -185,7 +184,7 @@ private:
 
         return -1;
     }
-    
+
     void m_swap(T& l, T& r) {
         T t = l;
         l = r;
