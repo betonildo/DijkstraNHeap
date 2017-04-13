@@ -51,38 +51,41 @@ public:
     static inline void testUpdate(std::ostream& os) {
 
         NHeap<Edge> h(2);
+        std::srand(time(0));
 
         os << "# n x S[i]/SE[i] or T[i]/TE[i]" << std::endl;
 
         for (unsigned long i = 1; i <= 20; i++) {
 
             unsigned long E = pow(2, i) * i;
-            unsigned long n_keys1 = pow(2, i) - 1;
+
+            unsigned long _2_p_i_m_1 = pow(2, i) - 1;
             unsigned long values1 = pow(2, i) + 1;
-            unsigned long n_keys2 = pow(2, i);
+
+            unsigned long _2_p_i = pow(2, i);
             unsigned long values2 = pow(2, i) + 2;
-            unsigned long updatevalue = pow(2, i);
-            unsigned long keystartmark = 0;
+
+            unsigned long updatevalue = pow(2, i) + 1 - i;
+            unsigned long keystartmark = _2_p_i_m_1 + 1;
             unsigned long n_swaps = 0;
 
             h.clearTree();
-            h.setCapacity(n_keys1 + n_keys2);
+            h.setCapacity(_2_p_i_m_1 + _2_p_i);
 
             // insert the first lotation
-            for (unsigned long keycount = 1; keycount <= n_keys1; keycount++) {
+            for (unsigned long keycount = 1; keycount <= _2_p_i_m_1; keycount++) {
                 h.insert({keycount, values1});
-                keystartmark = keycount;
             }
 
             // insert the second lotation
-            for (unsigned long keycount = 1; keycount <= n_keys2; keycount++) {
+            for (unsigned long keycount = 1; keycount <= _2_p_i; keycount++) {
                 h.insert({keycount + keystartmark, values2});
             }
 
             auto start = std::chrono::system_clock::now();
-            for (unsigned long keycount = 1; keycount <= n_keys2; keycount++) {
+            for (unsigned long keycount = 1; keycount <= _2_p_i + _2_p_i_m_1; keycount++) {
                 updatevalue -= 1;
-                n_swaps += h.update({keycount + keystartmark, updatevalue});
+                n_swaps += h.update({keycount, std::rand()});
             }
             auto end = std::chrono::system_clock::now();
             unsigned elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
@@ -91,8 +94,8 @@ public:
             double S_i_by_SE_i = n_swaps / E_div;
             double T_i_by_O_of_TE_i = elapsed / E_div;
 
-            os << "SWAPS " << n_keys2 << " " << S_i_by_SE_i << std::endl;
-            os << "TIME " << n_keys2 << " " << T_i_by_O_of_TE_i << std::endl;
+            os << "SWAPS " << _2_p_i << " " << S_i_by_SE_i << std::endl;
+            os << "TIME " << _2_p_i << " " << T_i_by_O_of_TE_i << std::endl;
         }
     }
 
