@@ -6,7 +6,7 @@
             "type": "cppdbg",
             "request": "launch",
             "program": "${workspaceRoot}/execute_tests.exe",
-            "args": ["dijkstra"],
+            "args": ["h_update"],
             "stopAtEntry": false,
             "cwd": "${workspaceRoot}",
             "environment": [],
