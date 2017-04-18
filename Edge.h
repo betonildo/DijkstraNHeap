@@ -64,6 +64,10 @@ struct Edge {
         return Edge::CompareWeights(a, b);
     }
 
+    inline friend int operator<(const Edge& a, const Edge& b) {
+        return a.weight - b.weight;
+    }
+
     inline friend bool operator==(Edge& a, Edge& b) {
         return Edge::SameKey(a, b);
     }
@@ -76,6 +80,10 @@ struct Edge {
         return a.to == b.to;
     }
     
+    inline friend unsigned long operator%(const Edge& e, int mod) {
+        return e.to;
+    }
+
     inline friend std::ostream& operator<<(std::ostream& os, const Edge& e) {
         os << "{" << e.to << ", " << e.weight << "}";
         return os;

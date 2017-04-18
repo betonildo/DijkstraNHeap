@@ -1,6 +1,7 @@
 #include <iostream>
 #include <climits>
 #include <vector>
+#include <map>
 #include <cstdlib>
 #include <ctime>
 #include <functional>
@@ -34,9 +35,15 @@ public:
     }
 
     int update(T element) {
-        int nodeIndex = m_updateHeapdownAll(0, element);
+        int nodeIndex = m_findElementIndex(element);
         unsigned long n_swaps = 0;
+        
         if (nodeIndex >= 0) {
+            // TODO:    change the aproach, take the element,
+            //          update it, select the minimun child,
+            //          use this child to occupy it's place,
+            //          put it self and other remainig children
+            //          to the last index and make the heapfy up.
             m_heap[nodeIndex] = element;
             // try to update upwards.
             m_heapfy(nodeIndex, n_swaps);
@@ -124,6 +131,7 @@ public:
 
 private:
     std::vector<T> m_heap;
+    std::map<T, unsigned long> m_swapMap;
     int m_aridity;
     int m_counter;
     int m_rootIndex;
@@ -136,10 +144,17 @@ private:
         // get vector references, much more elegant to use swap
         T& parent = m_heap[parentIndex];
         T& node = m_heap[nodeIndex];
+        
+        // Store index
+        m_swapMap[parent] = parentIndex;
+        m_swapMap[node] = nodeIndex;
 
         // if parent is higher than watching node, change their places in memory
         if (parent > node) {
             num_swaps += 1;
+            // Store swapped index
+            m_swapMap[parent] = nodeIndex;
+            m_swapMap[node] = parentIndex;
             m_swap(parent, node);
             m_heapfy(parentIndex, num_swaps);
         }
@@ -158,8 +173,15 @@ private:
                 T& childValue = m_heap[childIndex];
                 T& nodeValue = m_heap[nodeIndex];
 
+                // Store index
+                m_swapMap[childValue] = childIndex;
+                m_swapMap[nodeValue] = nodeIndex;
+
                 if (nodeValue > childValue) {
                     num_swaps += 1;
+                    // Store index
+                    m_swapMap[childValue] = nodeIndex;
+                    m_swapMap[nodeValue] = childIndex;
                     m_swap(nodeValue, childValue);
                     m_heapfyDown(childIndex, num_swaps);
                 }
@@ -167,20 +189,28 @@ private:
         }
     }
 
-    int m_updateHeapdownAll(int nodeIndex, T& element) {
-
-        T root = m_heap[nodeIndex];
-        if (root == element) return nodeIndex;
-        else {
-            for(int i = 0; i < m_aridity; i++) {
-                if (hasChildNth(nodeIndex, i)) {
-                    int childIndex = childNth(nodeIndex, i);
-                    T childValue = m_heap[childIndex];
-                    if (childValue == element) return childIndex;
-                    else return m_updateHeapdownAll(childIndex, element);
-                }
-            }
+    int m_findElementIndex(T& element) {
+        
+        auto it = m_swapMap.find(element);
+        // if iterator is valid return it stored value
+        if (it != m_swapMap.end()) return m_swapMap[element];
+        // otherwise, make a linear search
+        for (int i = 0; i < m_heap.size(); i++) {
+            if (m_heap[i] == element) return i;
         }
+
+        // T root = m_heap[nodeIndex];
+        // if (root == element) return nodeIndex;
+        // else {
+        //     for(int i = 0; i < m_aridity; i++) {
+        //         if (hasChildNth(nodeIndex, i)) {
+        //             int childIndex = childNth(nodeIndex, i);
+        //             T childValue = m_heap[childIndex];
+        //             if (childValue == element) return childIndex;
+        //             else return m_updateHeapdownAll(childIndex, element);
+        //         }
+        //     }
+        // }
 
         return -1;
     }

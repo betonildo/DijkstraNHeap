@@ -57,7 +57,7 @@ public:
 
         for (unsigned long i = 1; i <= 20; i++) {
 
-            unsigned long E = pow(2, i - 1) * (i - 1);
+            unsigned long E = pow(2, i) * i;
 
             unsigned long _2_p_i_m_1 = pow(2, i) - 1;
             unsigned long values1 = pow(2, i) + 1;
@@ -83,8 +83,8 @@ public:
             }
 
             auto start = std::chrono::system_clock::now();
-            for (unsigned long keycount = 1; keycount <= _2_p_i + _2_p_i_m_1; keycount++) {
-                n_swaps += h.update({keycount, updatevalue});
+            for (unsigned long keycount = 1; keycount <= _2_p_i; keycount++) {
+                n_swaps += h.update({keycount + keystartmark, updatevalue});
                 updatevalue -= 1;
             }
             auto end = std::chrono::system_clock::now();
@@ -93,6 +93,8 @@ public:
             double E_div = (double) (E ? E : 1);
             double S_i_by_SE_i = n_swaps / E_div;
             double T_i_by_O_of_TE_i = elapsed / E_div;
+
+            std::cout << E << " " << n_swaps << std::endl;
 
             os << "SWAPS " << _2_p_i << " " << S_i_by_SE_i << std::endl;
             os << "TIME " << _2_p_i << " " << T_i_by_O_of_TE_i << std::endl;
