@@ -60,7 +60,7 @@ struct Edge {
         return {INF, INF};
     }
 
-    inline friend unsigned long operator>(Edge& a, Edge& b) {
+    inline friend bool operator>(Edge& a, Edge& b) {
         return Edge::CompareWeights(a, b);
     }
 
@@ -72,7 +72,7 @@ struct Edge {
         return Edge::SameKey(a, b);
     }
 
-    inline static unsigned long CompareWeights(Edge& a, Edge& b) {
+    inline static bool CompareWeights(Edge& a, Edge& b) {
         return a.weight > b.weight;
     }
     

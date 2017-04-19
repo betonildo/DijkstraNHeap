@@ -83,7 +83,7 @@ public:
     }
 
     unsigned long heigherVertice() {
-        return m_graph.rbegin()->first;
+        return m_graph.size();
     }
 
     void print(unsigned ni) {

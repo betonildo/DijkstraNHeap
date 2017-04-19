@@ -23,8 +23,11 @@ int main(int argc, char** argv) {
     }
 
     if (arg == "dijkstra") {
-        std::ofstream dijkstra_test("unit_tests/tests_outputs/dijkstra_test.dat");
-        DijkstraTest::testDijkstra(dijkstra_test);
+        std::ofstream dijkstra_test_m("unit_tests/tests_outputs/dijkstra_test_m.dat");
+        DijkstraTest::testDijkstraM(dijkstra_test_m);
+
+        std::ofstream dijkstra_test_n("unit_tests/tests_outputs/dijkstra_test_n.dat");
+        DijkstraTest::testDijkstraN(dijkstra_test_n);
     }
 
     return 0;

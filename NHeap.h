@@ -9,20 +9,24 @@
 #ifndef NHEAP_H
 #define NHEAP_H
 
-template<typename T>
-class NHeap {
+template <typename T>
+class NHeap
+{
 
-public:
-    NHeap(int aridity) {
+  public:
+    NHeap(int aridity)
+    {
         m_aridity = aridity;
         m_heap.reserve(64);
         clearTree();
     }
 
-    unsigned int insert(T number) {
+    unsigned int insert(T number)
+    {
         int lastIndex = m_heap.size();
         unsigned int capacity = m_heap.capacity();
-        if (lastIndex >= capacity) m_heap.reserve(capacity * 2);
+        if (lastIndex >= capacity)
+            m_heap.reserve(capacity * 2);
         m_heap.push_back(number);
         unsigned long n_swaps = 0;
         m_heapfy(lastIndex, n_swaps);
@@ -30,15 +34,18 @@ public:
         return n_swaps;
     }
 
-    void setCapacity(unsigned long capacity) {
+    void setCapacity(unsigned long capacity)
+    {
         m_heap.reserve(capacity);
     }
 
-    int update(T element) {
+    int update(T element)
+    {
         int nodeIndex = m_findElementIndex(element);
         unsigned long n_swaps = 0;
-        
-        if (nodeIndex >= 0) {
+
+        if (nodeIndex >= 0)
+        {
             // TODO:    change the aproach, take the element,
             //          update it, select the minimun child,
             //          use this child to occupy it's place,
@@ -49,67 +56,85 @@ public:
             m_heapfy(nodeIndex, n_swaps);
             // if no swap was made upper, then maybe some swap
             // can be needed down
-            if (n_swaps == 0) m_heapfyDown(nodeIndex, n_swaps);
+            if (n_swaps == 0)
+                m_heapfyDown(nodeIndex, n_swaps);
         }
         return n_swaps;
     }
 
-    int childNth(int index, int childNumber) {
+    int childNth(int index, int childNumber)
+    {
         int nodeIndex = m_aridity * index + childNumber + 1;
         return nodeIndex;
     }
 
-    bool hasChildNth(int index, int childNumber) {
+    bool hasChildNth(int index, int childNumber)
+    {
         int nodeIndex = m_aridity * index + childNumber + 1;
         return nodeIndex < m_rootIndex + m_counter;
     }
 
-    int parent(int nodeIndex) {
-        int parentIndex = (int)((float)(nodeIndex - 1)/(float)m_aridity);
+    int parent(int nodeIndex)
+    {
+        int parentIndex = (int)((float)(nodeIndex - 1) / (float)m_aridity);
         return parentIndex;
     }
 
-    bool empty() {
+    bool empty()
+    {
         return m_counter == 0;
     }
 
-    bool hasNext() {
+    bool hasNext()
+    {
         return m_counter > 0;
     }
 
-    T getNext() {
+    T getNext()
+    {
         unsigned long n_swaps;
         return getNext(n_swaps);
     }
 
-    T getNext(unsigned long& n_swaps) {
+    T getNext(unsigned long &n_swaps)
+    {
 
         // the extracted
         T next = m_heap[m_rootIndex];
+        m_swapMap.erase(next);
 
-        // Mark root to be comparable distinguished
-        m_heap[m_rootIndex] = T();
-
+        m_counter -= 1;
+        // replace the first element with the last one
+        m_heap[m_rootIndex] = m_heap[m_counter - 1];
         // verify if the heapfy for all the tree from end to begining
         m_heapfyDown(m_rootIndex, n_swaps);
-        m_counter -= 1;
+
+        // for (long i = m_counter; i >=0; i--) {
+        //     m_heapfy(i, n_swaps);
+        // }
+
+        // //percolateDown(m_rootIndex, n_swaps);
         return next;
     }
 
-    void clearTree() {
+    void clearTree()
+    {
         m_rootIndex = 0;
         m_counter = 0;
         m_heap.clear();
         m_heap.erase(m_heap.begin(), m_heap.end());
     }
 
-    int size() {
+    int size()
+    {
         return m_heap.size();
     }
 
-    void print() {
+    void print()
+    {
         std::cout << "[";
-        for (unsigned i = 0; i < m_heap.size() - 1; i++) {
+        for (unsigned i = 0; i < m_heap.size() - 1; i++)
+        {
             auto e = m_heap[i];
             std::cout << e << ", ";
         }
@@ -118,10 +143,12 @@ public:
         std::cout << e << "]" << std::endl;
     }
 
-    std::vector<T> heapSorted() {
+    std::vector<T> heapSorted()
+    {
         std::vector<T> sortedArray;
 
-        while(hasNext()) {
+        while (hasNext())
+        {
             T next = getNext();
             sortedArray.push_back(next);
         }
@@ -129,28 +156,31 @@ public:
         return sortedArray;
     }
 
-private:
+  private:
     std::vector<T> m_heap;
     std::map<T, unsigned long> m_swapMap;
     int m_aridity;
     int m_counter;
     int m_rootIndex;
 
-    void m_heapfy(int nodeIndex, unsigned long& num_swaps) {
+    void m_heapfy(int nodeIndex, unsigned long &num_swaps)
+    {
         // if i'm root don't do anything
-        if (nodeIndex == m_rootIndex) return;
+        if (nodeIndex == m_rootIndex)
+            return;
 
         int parentIndex = parent(nodeIndex);
         // get vector references, much more elegant to use swap
-        T& parent = m_heap[parentIndex];
-        T& node = m_heap[nodeIndex];
-        
+        T &parent = m_heap[parentIndex];
+        T &node = m_heap[nodeIndex];
+
         // Store index
         m_swapMap[parent] = parentIndex;
         m_swapMap[node] = nodeIndex;
 
         // if parent is higher than watching node, change their places in memory
-        if (parent > node) {
+        if (parent > node)
+        {
             num_swaps += 1;
             // Store swapped index
             m_swapMap[parent] = nodeIndex;
@@ -160,62 +190,83 @@ private:
         }
     }
 
-    void m_heapfyDown(int nodeIndex, unsigned long& num_swaps) {
+    void m_heapfyDown(int nodeIndex, unsigned long &num_swaps)
+    {
 
-        if (nodeIndex == m_counter + 1) return;
+        if (nodeIndex >= m_counter + 1)
+            return;
+        
+        // find the minimun child and make the way throughout it
+        int minimumChildIndex = m_findMinimumChildIndex(nodeIndex);
+        if (minimumChildIndex < 0) return;
+        
+        T &childValue = m_heap[minimumChildIndex];
+        T &nodeValue = m_heap[nodeIndex];
 
-        // verify heap property for each of it's children
-        for (int i = 0; i < m_aridity; i++) {
+        // Update swap indexes
+        m_swapMap[nodeValue] = nodeIndex;
 
-            if (hasChildNth(nodeIndex, i)) {
-
-                int childIndex = childNth(nodeIndex, i);
-                T& childValue = m_heap[childIndex];
-                T& nodeValue = m_heap[nodeIndex];
-
-                // Store index
-                m_swapMap[childValue] = childIndex;
-                m_swapMap[nodeValue] = nodeIndex;
-
-                if (nodeValue > childValue) {
-                    num_swaps += 1;
-                    // Store index
-                    m_swapMap[childValue] = nodeIndex;
-                    m_swapMap[nodeValue] = childIndex;
-                    m_swap(nodeValue, childValue);
-                    m_heapfyDown(childIndex, num_swaps);
-                }
-            }
+        // if minimun child is higher than it's parent, swap both
+        if (nodeValue > childValue) {
+            num_swaps += 1;
+            // Store index
+            m_swapMap[childValue] = nodeIndex;
+            m_swapMap[nodeValue] = minimumChildIndex;
+            m_swap(nodeValue, childValue);
+            // swap only one child, not all of them
+            m_heapfyDown(minimumChildIndex, num_swaps);
         }
     }
 
-    int m_findElementIndex(T& element) {
-        
-        auto it = m_swapMap.find(element);
-        // if iterator is valid return it stored value
-        if (it != m_swapMap.end()) return m_swapMap[element];
-        // otherwise, make a linear search
-        for (int i = 0; i < m_heap.size(); i++) {
-            if (m_heap[i] == element) return i;
-        }
+    int m_findMinimumChildIndex(int nodeIndex) {
+        // find the minimun child and make the way throughout it
+        if (hasChildNth(nodeIndex, 0)) {
+            int tmpChildIndex = childNth(nodeIndex, 0);
+            T tmpChildValue = m_heap[tmpChildIndex];
 
-        // T root = m_heap[nodeIndex];
-        // if (root == element) return nodeIndex;
-        // else {
-        //     for(int i = 0; i < m_aridity; i++) {
-        //         if (hasChildNth(nodeIndex, i)) {
-        //             int childIndex = childNth(nodeIndex, i);
-        //             T childValue = m_heap[childIndex];
-        //             if (childValue == element) return childIndex;
-        //             else return m_updateHeapdownAll(childIndex, element);
-        //         }
-        //     }
-        // }
+            // Update swap indexes
+            m_swapMap[tmpChildValue] = tmpChildIndex;
+
+            for (int i = 1; i < m_aridity; i++) {
+                if (hasChildNth(nodeIndex, i)) {
+                    int anotherChildIndex = childNth(nodeIndex, i);
+                    T anotherChildValue = m_heap[anotherChildIndex];
+                    // Update swap indexes
+                    m_swapMap[anotherChildValue] = anotherChildIndex;
+
+                    // Update the minimum child
+                    if (tmpChildValue > anotherChildValue) {
+                        tmpChildValue = anotherChildValue;
+                        tmpChildIndex = anotherChildIndex;
+                    }
+                }
+            }
+
+            return tmpChildIndex;
+        }
 
         return -1;
     }
 
-    void m_swap(T& l, T& r) {
+    int m_findElementIndex(T &element)
+    {
+
+        auto it = m_swapMap.find(element);
+        // if iterator is valid return it stored value
+        if (it != m_swapMap.end())
+            return m_swapMap[element];
+        // otherwise, make a linear search
+        for (int i = 0; i < m_heap.size(); i++)
+        {
+            if (m_heap[i] == element)
+                return i;
+        }
+
+        return -1;
+    }
+
+    void m_swap(T &l, T &r)
+    {
         T t = l;
         l = r;
         r = t;
