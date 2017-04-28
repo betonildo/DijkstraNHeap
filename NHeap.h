@@ -23,7 +23,7 @@ class NHeap
 
     unsigned int insert(T number)
     {
-        int lastIndex = m_heap.size();
+        unsigned int lastIndex = m_heap.size();
         unsigned int capacity = m_heap.capacity();
         if (lastIndex >= capacity)
             m_heap.reserve(capacity * 2);
@@ -256,7 +256,7 @@ class NHeap
         if (it != m_swapMap.end())
             return m_swapMap[element];
         // otherwise, make a linear search
-        for (int i = 0; i < m_heap.size(); i++)
+        for (unsigned int i = 0; i < m_heap.size(); i++)
         {
             if (m_heap[i] == element)
                 return i;

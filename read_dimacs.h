@@ -14,7 +14,7 @@ void read_dimacs(std::istream& in, Graph& g) {
     linestr >> dummy >> dummy >> n >> m;
     g.setSize(n);
     
-    unsigned i = 0;
+    unsigned int i = 0;
     
     while (i < m) {
         
@@ -22,7 +22,7 @@ void read_dimacs(std::istream& in, Graph& g) {
         
         if (line.substr(0,2) == "a ") {
             std::stringstream arc(line);
-            unsigned u,v,w;
+            unsigned int u,v,w;
             char ac;
             arc >> ac >> u >> v >> w;
             // processar arco (u,v) com peso w

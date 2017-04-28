@@ -28,7 +28,7 @@ public:
     }
     
     EdgeDistance dijkstra(unsigned long origin,  unsigned long dest) {
-        
+
         // instantiate distances calculated
         EdgeDistance distances[m_numberOfElements];
 
@@ -86,11 +86,11 @@ public:
         return m_graph.size();
     }
 
-    void print(unsigned ni) {
+    void print(unsigned long ni) {
         
-        printf("%d ", ni);
+        printf("%lu ", ni);
         for(auto neibor : m_graph[ni]) {
-            printf("-(%d)-> ", neibor.weight);
+            printf("-(%lu)-> ", neibor.weight);
             print(neibor.to);
         }
 

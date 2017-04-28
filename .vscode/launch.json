@@ -5,13 +5,12 @@
             "name": "C++ Launch",
             "type": "cppdbg",
             "request": "launch",
-            "program": "${workspaceRoot}/execute_tests.exe",
-            "args": ["h_update"],
+            "program": "${workspaceRoot}/dijkstra",
+            "args": ["1", "2", "simple.gr"],
             "stopAtEntry": false,
             "cwd": "${workspaceRoot}",
             "environment": [],
             "externalConsole": true,
-            "miDebuggerPath": "C:/Portables/mingw64/bin/gdb.exe",
             "linux": {
                 "MIMode": "gdb",
                 "setupCommands": [
@@ -26,6 +25,7 @@
                 "MIMode": "lldb"
             },
             "windows": {
+                "miDebuggerPath": "C:/Portables/mingw64/bin/gdb.exe",
                 "MIMode": "gdb",
                 "setupCommands": [
                     {
