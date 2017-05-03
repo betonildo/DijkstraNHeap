@@ -13,14 +13,11 @@ int main(int argc, char** argv) {
     int dest = atoi(argv[2]);
 
     Graph g;
-
-    if (argc == 3) {
-        read_dimacs(std::cin, g);
-    }
-    else {
-        std::ifstream f(argv[3]);
+    if (argc > 3) {
+        FILE* f = fopen(argv[3], "r");
         read_dimacs(f, g);
     }
+    else read_dimacs(stdin, g);
     
     // inicio
     EdgeDistance ed = g.dijkstra(origin, dest);

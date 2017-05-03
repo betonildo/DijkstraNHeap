@@ -32,10 +32,13 @@ public:
         // instantiate distances calculated
         EdgeDistance distances[m_numberOfElements];
 
-        // if some over or under flow occurs, the distance is infinity
-        if (dest >= m_numberOfElements || origin >= m_numberOfElements || dest < 0 || origin < 0) return distances[0];
         // The distance to it self is 0
         distances[origin].distanceTo = 0;
+        distances[origin].infinity = false;
+
+        // if some over or under flow occurs, the distance is infinity
+        if (origin == dest) return distances[dest];
+        if (dest >= m_numberOfElements || origin >= m_numberOfElements) return EdgeDistance();
         
         // instantiate the heap and insert the vertice origin as starting point
         NHeap<Edge> edgesHeap(m_aridity);

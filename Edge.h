@@ -4,12 +4,13 @@
 #ifndef EDGE_H
 #define EDGE_H
 
-#define INF INT_MAX
+#define INF USHRT_MAX
 
+#pragma pack(1)
 struct EdgeDistance {
-    unsigned long distanceTo;
-    bool visited;
-    bool infinity;
+    unsigned short distanceTo : 16;
+    unsigned char visited : 8;
+    unsigned char infinity : 8;
 
     EdgeDistance() {
         distanceTo = INF;
@@ -24,6 +25,7 @@ struct EdgeDistance {
     }
 };
 
+#pragma pack(1)
 struct Edge {
     unsigned long to;
     unsigned long weight;
