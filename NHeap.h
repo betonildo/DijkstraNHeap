@@ -5,6 +5,7 @@
 #include <cstdlib>
 #include <ctime>
 #include <functional>
+#include "definitions.h"
 
 #ifndef NHEAP_H
 #define NHEAP_H
@@ -28,13 +29,13 @@ class NHeap
         if (lastIndex >= capacity)
             m_heap.reserve(capacity * 2);
         m_heap.push_back(number);
-        unsigned long n_swaps = 0;
+        U32 n_swaps = 0;
         m_heapfy(lastIndex, n_swaps);
         m_counter += 1;
         return n_swaps;
     }
 
-    void setCapacity(unsigned long capacity)
+    void setCapacity(U32 capacity)
     {
         m_heap.reserve(capacity);
     }
@@ -42,7 +43,7 @@ class NHeap
     int update(T element)
     {
         int nodeIndex = m_findElementIndex(element);
-        unsigned long n_swaps = 0;
+        U32 n_swaps = 0;
 
         if (nodeIndex >= 0)
         {
@@ -92,11 +93,11 @@ class NHeap
 
     T getNext()
     {
-        unsigned long n_swaps;
+        U32 n_swaps;
         return getNext(n_swaps);
     }
 
-    T getNext(unsigned long &n_swaps)
+    T getNext(U32 &n_swaps)
     {
 
         // the extracted
@@ -158,12 +159,12 @@ class NHeap
 
   private:
     std::vector<T> m_heap;
-    std::map<T, unsigned long> m_swapMap;
+    std::map<T, U32> m_swapMap;
     int m_aridity;
     int m_counter;
     int m_rootIndex;
 
-    void m_heapfy(int nodeIndex, unsigned long &num_swaps)
+    void m_heapfy(int nodeIndex, U32 &num_swaps)
     {
         // if i'm root don't do anything
         if (nodeIndex == m_rootIndex)
@@ -190,7 +191,7 @@ class NHeap
         }
     }
 
-    void m_heapfyDown(int nodeIndex, unsigned long &num_swaps)
+    void m_heapfyDown(int nodeIndex, U32 &num_swaps)
     {
 
         if (nodeIndex >= m_counter + 1)

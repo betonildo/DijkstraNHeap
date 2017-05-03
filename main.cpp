@@ -1,4 +1,4 @@
-#include "Graph.h"
+#include "BinaryHeapGraph.h"
 #include "read_dimacs.h"
 #include <iostream>
 #include <assert.h>
@@ -12,7 +12,7 @@ int main(int argc, char** argv) {
     int origin = atoi(argv[1]);
     int dest = atoi(argv[2]);
 
-    Graph g;
+    BinaryHeap::Graph g;
     if (argc > 3) {
         FILE* f = fopen(argv[3], "r");
         read_dimacs(f, g);

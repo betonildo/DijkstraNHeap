@@ -1,41 +1,18 @@
-#include <iostream>
-#include <climits>
+#ifndef EDGE_BH_H
+#define EDGE_BH_H
 
-#ifndef EDGE_H
-#define EDGE_H
+#include "definitions.h"
 
-#define INF USHRT_MAX
-
-#pragma pack(1)
-struct EdgeDistance {
-    unsigned short distanceTo : 16;
-    unsigned char visited : 8;
-    unsigned char infinity : 8;
-
-    EdgeDistance() {
-        distanceTo = INF;
-        visited = false;
-        infinity = true;
-    }
-
-    inline friend std::ostream& operator<<(std::ostream& os, const EdgeDistance& ed) {
-        if (ed.infinity) os << "inf";
-        else os << ed.distanceTo;
-        return os;
-    }
-};
-
-#pragma pack(1)
 struct Edge {
-    unsigned long to;
-    unsigned long weight;
+    U32 to;
+    U32 weight;
 
     Edge() {
         to = INF;
         weight = INF;
     }
 
-    Edge(unsigned long v, unsigned long w) {
+    Edge(U32 v, U32 w) {
         to = v;
         weight = w;
     }
@@ -45,7 +22,7 @@ struct Edge {
         weight = other.weight;
     }
     
-    static Edge Create(unsigned long to, unsigned long weight) {
+    static Edge Create(U32 to, U32 weight) {
         Edge e;
         e.to = to;
         e.weight = weight;
@@ -82,7 +59,7 @@ struct Edge {
         return a.to == b.to;
     }
     
-    inline friend unsigned long operator%(const Edge& e, int mod) {
+    inline friend U32 operator%(const Edge& e, int mod) {
         return e.to;
     }
 
@@ -92,4 +69,4 @@ struct Edge {
     }
 };
 
-#endif /*EDGE_H*/
+#endif

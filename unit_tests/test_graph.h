@@ -1,4 +1,4 @@
-#include "Graph.h"
+#include "BinaryHeapGraph.h"
 #include <iostream>
 #include <cstdlib>
 #include <ctime>
@@ -13,14 +13,12 @@ public:
     static inline void testDijkstraM(std::ostream& os) {
 
 
-        Graph g;
+        BinaryHeap::Graph g;
         std::srand(time(0));
 
         os << "# m, T /(n + m) log(n), inserts, deletes, updates" << std::endl;
         
         for (unsigned long i = 1; i < 20; i++) {
-            
-            g.clearCounters();
             
             unsigned long m = pow(2, i);
             unsigned long n = m;
@@ -34,8 +32,8 @@ public:
                 unsigned long dest = -1;
                 
                 while(origin == dest) {
-                    origin = std::rand() % g.heigherVertice();
-                    dest = std::rand() % g.heigherVertice();
+                    origin = std::rand() % n;
+                    dest = std::rand() % n;
                 }
                 
                 auto start = std::chrono::system_clock::now();
@@ -54,29 +52,25 @@ public:
     static inline void testDijkstraN(std::ostream& os) {
 
 
-        Graph g;
         std::srand(time(0));
 
+        BinaryHeap::Graph g;
         os << "# m, T /(n + m) log(n), inserts, deletes, updates" << std::endl;
         
         for (unsigned long i = 1; i < 20; i++) {
-            
-            g.clearCounters();
             
             unsigned long m = pow(2, i);
             unsigned long n = m;
             double time_sum = 0;
             generateGraph(g, n, m);
 
-            
-
             for (int times = 0; times < 30; times++) {
                 unsigned long origin = -1;
                 unsigned long dest = -1;
                 
                 while(origin == dest) {
-                    origin = std::rand() % g.heigherVertice();
-                    dest = std::rand() % g.heigherVertice();
+                    origin = std::rand() % n;
+                    dest = std::rand() % n;
                 }
                 
                 auto start = std::chrono::system_clock::now();
@@ -92,6 +86,7 @@ public:
         }
     }
 
+    template<typename Graph>
     static inline void generateGraph(Graph& g, unsigned long n, unsigned long m) {
         std::srand(time(0));
         for (unsigned long i = 1; i <= n; i++) {
